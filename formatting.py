@@ -8,3 +8,10 @@ def format_metric(value, metric_type):
         return f"{round(value * 100, 1)}%"
     else:
         return f'{(value)}'
+    
+def format_dataframe(df, metrics):
+    cols = df.columns
+    for col in cols:
+        if col in metrics:
+            df[col] = df[col].apply(format_metric, metric_type=metrics[col].type)
+    return df

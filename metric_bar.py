@@ -5,7 +5,7 @@ from formatting import format_metric
 def get_metric_value(df, metric):
     return metric.func(df)
 
-def metric_bar(main_df):
+def metric_bar(main_df, compare_df):
     with st.container(border=True):
         metric_cols = st.columns(len(display_metrics))
         for idx, metric_name in enumerate(display_metrics):
@@ -13,6 +13,23 @@ def metric_bar(main_df):
             with metric_cols[idx]:
                 value = get_metric_value(main_df, metric)
                 formatted_value = format_metric(value, metric.type)
+                formatted_delta = get_formatted_delta(value, compare_df, metric)
                 c1, c2, c3 =st.columns([1, 3, 1])
                 with c2:
-                    st.metric(label=metric.title, value=formatted_value)
+                    st.metric(metric.title, formatted_value, formatted_delta, 'normal') 
+
+def get_delta(value, compare_df, metric):
+    delta  = None
+    if compare_df is not None:
+        compare_value = get_metric_value(compare_df, metric)
+        delta = value - compare_value
+        if compare_value != 0:
+            delta = (value - compare_value) / (compare_value)
+    return delta
+
+def get_formatted_delta(value, compare_df, metric):
+    delta = get_delta(value, compare_df, metric)
+    formatted_delta = None
+    if delta is not None:
+        formatted_delta = format_metric(delta, "percentage")
+    return formatted_delta

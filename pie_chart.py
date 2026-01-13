@@ -17,7 +17,7 @@ def pie_chart(df):
     with st.container(border=True):
         split_dimension = st.selectbox(
             "Group By",
-            options=["Age group", "Gender", "State", "Category", "Segment", "Product name"],
+            options=["Age group", "Gender", "State", "Category", "Segment", "Product name"], key="w:pie_split"
             # options=["Age group", "Gender", "Category", "Segment", "Product name", "State"],
         
         )
@@ -25,4 +25,4 @@ def pie_chart(df):
         for idx, metric in enumerate(pie_chart_display_metrics):
             with metric_tabs[idx]:
                 chart = get_pie_chart(df, metrics[metric], dimension=split_dimension)
-                st.plotly_chart(chart, use_container_width=True)
+                st.plotly_chart(chart, width='stretch')

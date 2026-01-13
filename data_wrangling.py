@@ -9,6 +9,9 @@ def prep_data() -> pd.DataFrame:
     df = clean_column_names(load_data())
     # Convert 'Date' column to datetime and create 'Day' column
     df['Day'] = pd.to_datetime(df['Date'])
+    df['Week'] = df['Day'].dt.to_period('W').dt.to_timestamp() # type: ignore
+    df['Month'] = df['Day'].dt.to_period('M').dt.to_timestamp() # type: ignore
+    df['Year'] = df['Day'].dt.to_period('Y').dt.to_timestamp() # type: ignore
     return df
 
 # New function to get unique values from a DataFrame column
@@ -51,13 +54,13 @@ def get_filtered_data_within_date_range(df, start_date, end_date, filters):
     df_within_range = get_data_within_date_range(df.copy(), start_date, end_date)
     return apply_filters(df_within_range, filters)
 
-def get_metric_time_series(df, metric):
+def get_metric_time_series(df, metric, grain):
     """Generates time series data for a given metric."""
-    grouped = df.groupby('Day')
+    grouped = df.groupby(grain)
     data = grouped.apply(
         metric.func, include_groups=False
     ).reset_index()
-    data.columns = ['Day', 'Value']
+    data.columns = [grain, 'Value']
     return data
 
 def get_metric_grouped_by_dimensions(df, metric, dimension):
